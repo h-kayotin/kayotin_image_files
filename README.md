@@ -5,3 +5,13 @@
 
 pathlib，pillow
 
+### How to use
+
+运行kayotin_main.py即可
+
+### 包含以下功能
+
+1. jpg转png
+2. png转ico
+3. 查询文件（还在施工
+4. C盘清理（还在施工

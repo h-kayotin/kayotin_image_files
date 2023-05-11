@@ -62,12 +62,11 @@ def ico_main():
     label1 = tk.Label(root, text='PNG转ICO', bg='lightblue')
     label1.config(font=('helvetica', 20))
     canvas1.create_window(250, 100, window=label1)
-    # 选择图片的按钮
-
-    browse_button = tk.Button(text="选择图片", command=get_png, bg=bg, fg=fg, font=font, width=width)
+    # 选择图片的按钮，注意button的第一个参数，指定他的parent，这里不指定的话会报错
+    browse_button = tk.Button(root, text="选择图片", command=get_png, bg=bg, fg=fg, font=font, width=width)
     canvas1.create_window(250, 150, window=browse_button)
     # 保存图片的按钮
-    save_as_button = tk.Button(text='开始转换', command=convert_to_ico, bg=bg, fg=fg, font=font, width=width)
+    save_as_button = tk.Button(root, text='开始转换', command=convert_to_ico, bg=bg, fg=fg, font=font, width=width)
     canvas1.create_window(250, 200, window=save_as_button)
     root.mainloop()
 

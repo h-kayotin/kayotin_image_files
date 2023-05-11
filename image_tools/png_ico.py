@@ -1,7 +1,7 @@
 """
 png_ico - PNG格式转ICO
 
-Author: JiangHai江海
+Author: JiangHai
 Date： 2023/5/11
 """
 

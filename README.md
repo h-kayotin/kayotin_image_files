@@ -3,7 +3,7 @@
 
 ### 需要的库：
 
-pathlib，pillow
+pathlib，pillow，ttkbootstrap 
 
 ### How to use
 
@@ -13,6 +13,8 @@ pathlib，pillow
 
 1. jpg转png
 2. png转ico
-3. 查询文件（还在施工
-4. C盘清理（还在施工
+3. 查询文件：支持模糊查询，返回查询到的路径
+4. 整理文件：根据文件类型整理至不同文件夹
+5. 删除重复文件：将重复文件移动到一个文件夹，确认后删除
+
 

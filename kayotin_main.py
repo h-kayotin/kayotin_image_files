@@ -6,44 +6,40 @@ Date： 2023/5/11
 """
 
 import image_tools
-import tkinter
-from tkinter import filedialog
-from tkinter import messagebox
-
-do_somethings = {
-    "1": "转换图片，done",
-    "2": "查询文件",
-    "3": "清理C盘",
-    "4": "转ICO，done"
-
-}
+import ttkbootstrap as ttk
 
 
 def main():
-    # 创建TK对象
-    root_main = tkinter.Tk()
-    font = ('helvetica', 12, 'bold')
-    bg = 'grey'
-    fg = 'white'
+    root_main = ttk.Window(themename="lumen")
     width = 15
-
-    # 用画布创建窗口对象
     root_main.title("工具箱")
-    canvas_main = tkinter.Canvas(root_main, width=500, height=350, bg='white')
+
+    # 新建画布
+    canvas_main = ttk.Canvas(root_main, width=500, height=400, bg='white')
     canvas_main.pack()
-    label1 = tkinter.Label(root_main, text='工具箱', bg='white')
+    label1 = ttk.Label(root_main, text='工具箱')
     label1.config(font=('helvetica', 20))
     canvas_main.create_window(250, 100, window=label1)
 
     # 第一个功能：转换成ICO
-    func1_button = tkinter.Button(root_main, text="PNG转ICO", command=image_tools.png_ico.ico_main,
-                                  bg=bg, fg=fg, font=font, width=width)
+    func1_button = ttk.Button(root_main, text="PNG转ICO", command=image_tools.png_ico.ico_main,
+                              width=width, style="success")
     canvas_main.create_window(250, 150, window=func1_button)
 
     # 第二个功能：jpg转png
-    func2_button = tkinter.Button(root_main, text="JPG转png", command=image_tools.jpg_png.to_png,
-                                  bg=bg, fg=fg, font=font, width=width)
+    func2_button = ttk.Button(root_main, text="JPG转png", command=image_tools.jpg_png.to_png,
+                              width=width, style="info")
     canvas_main.create_window(250, 200, window=func2_button)
+
+    # 第三个功能：查找文件
+    func3_button = ttk.Button(root_main, text="查找文件", command=image_tools.find_file.find_file,
+                              width=width, style="success")
+    canvas_main.create_window(250, 250, window=func3_button)
+
+    # 第四个功能：分类文件
+    func4_button = ttk.Button(root_main, text="文件分类", command=image_tools.classify_file.classify_file,
+                              width=width, style="info")
+    canvas_main.create_window(250, 300, window=func4_button)
 
     root_main.mainloop()
 

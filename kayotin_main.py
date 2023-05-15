@@ -22,7 +22,8 @@ def main():
     canvas_main.create_window(250, 100, window=label1)
 
     # 第一个功能：转换成ICO
-    func1_button = ttk.Button(root_main, text="PNG转ICO", command=image_tools.png_ico.ico_main,
+    func1_button = ttk.Button(root_main, text="PNG转ICO",
+                              command=lambda: image_tools.png_ico.ico_main(root_main),
                               width=width, style="success outline button")
     canvas_main.create_window(250, 150, window=func1_button)
 

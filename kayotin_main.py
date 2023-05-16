@@ -17,6 +17,7 @@ def main(root=None):
 
     width = 15
     root_main.title("工具箱")
+    root_main.iconbitmap("toolbox.ico")
     root_main.resizable(False, False)
 
     # 新建画布

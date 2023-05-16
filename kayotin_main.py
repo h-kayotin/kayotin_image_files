@@ -17,6 +17,7 @@ def main(root=None):
 
     width = 15
     root_main.title("工具箱")
+    root_main.resizable(False, False)
 
     # 新建画布
     canvas_main = ttk.Canvas(root_main, width=500, height=450, bg='white')

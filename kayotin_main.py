@@ -32,7 +32,8 @@ def main(root=None):
     canvas_main.create_window(250, 150, window=func1_button)
 
     # 第二个功能：jpg转png
-    func2_button = ttk.Button(root_main, text="JPG转png", command=image_tools.jpg_png.to_png,
+    func2_button = ttk.Button(root_main, text="JPG转PNG",
+                              command=lambda: image_tools.jpg_png.init_interface(root_main, canvas_main),
                               width=width, style="info outline button")
     canvas_main.create_window(250, 200, window=func2_button)
 

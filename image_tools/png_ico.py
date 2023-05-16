@@ -66,10 +66,10 @@ def ico_main(src_root=None, src_canvas: Canvas = None):
     width = 15
     root.title('PNG转换ICO')
 
-    canvas_ico = tk.Canvas(root, width=500, height=350, bg='white')
+    canvas_ico = ttk.Canvas(root, width=500, height=350, bg='white')
     canvas_ico.pack()
     # 窗口中的标题文字
-    label1 = tk.Label(root, text='PNG转ICO')
+    label1 = ttk.Label(root, text='PNG转ICO')
     label1.config(font=('helvetica', 20))
     canvas_ico.create_window(250, 100, window=label1)
 

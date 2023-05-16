@@ -9,8 +9,12 @@ import image_tools
 import ttkbootstrap as ttk
 
 
-def main():
-    root_main = ttk.Window(themename="lumen")
+def main(root=None):
+    if root:
+        root_main = root
+    else:
+        root_main = ttk.Window(themename="lumen")
+
     width = 15
     root_main.title("工具箱")
 
@@ -23,7 +27,7 @@ def main():
 
     # 第一个功能：转换成ICO
     func1_button = ttk.Button(root_main, text="PNG转ICO",
-                              command=lambda: image_tools.png_ico.ico_main(root_main),
+                              command=lambda: image_tools.png_ico.ico_main(root_main, canvas_main),
                               width=width, style="success outline button")
     canvas_main.create_window(250, 150, window=func1_button)
 

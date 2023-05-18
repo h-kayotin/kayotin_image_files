@@ -24,7 +24,7 @@ def main(root=None):
     canvas_main = ttk.Canvas(root_main, width=500, height=450, bg='white')
     canvas_main.pack()
     label1 = ttk.Label(root_main, text='工具箱')
-    label1.config(font=('helvetica', 20))
+    label1.config(font=('微软雅黑', 20))
     canvas_main.create_window(250, 100, window=label1)
 
     # 第一个功能：转换成ICO

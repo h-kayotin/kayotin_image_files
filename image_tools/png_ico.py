@@ -16,6 +16,7 @@ import kayotin_main
 
 # 初始化图片路径
 img = ""
+img_name = ""
 
 
 def get_png():
@@ -24,10 +25,12 @@ def get_png():
     :return:无
     """
     global img
+    global img_name
     import_file_path = tk.filedialog.askopenfilename(filetypes=[("PNG File", '.png')])
     source_path = Path(import_file_path)
     if source_path.is_file():
         img = Image.open(source_path)
+        img_name = source_path.name.split(".")[0]
 
 
 def convert_to_ico():
@@ -39,7 +42,11 @@ def convert_to_ico():
     if img == "":
         tk.messagebox.showerror("Error", "请先选择文件")
     else:
-        export_file_path = tk.filedialog.asksaveasfilename(defaultextension='.ico', filetypes=[("ICO", ".ico")])
+        # initial file参数指定了保存的默认文件名
+        export_file_path = tk.filedialog.asksaveasfilename(
+            defaultextension='.ico', filetypes=[("ICO", ".ico")],
+            initialfile=img_name
+        )
         if export_file_path == "":
             return
         img.save(export_file_path)
@@ -74,16 +81,18 @@ def ico_main(src_root=None, src_canvas: Canvas = None):
     canvas_ico.create_window(250, 100, window=label1)
 
     # 选择图片的按钮，注意button的第一个参数，指定他的parent，这里不指定的话会报错
-    browse_button = ttk.Button(root, text="选择图片", command=get_png, width=width, style="success outline button")
+    browse_button = ttk.Button(root, text="选择图片",
+                               command=get_png, width=width, style="success outline button")
     canvas_ico.create_window(250, 150, window=browse_button)
     # 保存图片的按钮
-    save_as_button = ttk.Button(root, text='开始转换', command=convert_to_ico, width=width, style="success outline button")
+    save_as_button = ttk.Button(root, text='开始转换',
+                                command=convert_to_ico, width=width, style="success outline button")
     canvas_ico.create_window(250, 200, window=save_as_button)
     # 回到首页的按钮
-    save_as_button = ttk.Button(root, text='返回首页',
-                                command=lambda: back_main(root, canvas_ico),
-                                width=width, style="success solid toolbutton")
-    canvas_ico.create_window(250, 250, window=save_as_button)
+    back_button = ttk.Button(root, text='返回首页',
+                             command=lambda: back_main(root, canvas_ico),
+                             width=width, style="success solid toolbutton")
+    canvas_ico.create_window(250, 250, window=back_button)
 
     root.mainloop()
 

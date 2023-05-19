@@ -7,6 +7,7 @@ Date： 2023/5/11
 
 import image_tools
 import ttkbootstrap as ttk
+import os
 
 
 def main(root=None):
@@ -17,7 +18,7 @@ def main(root=None):
 
     width = 15
     root_main.title("工具箱")
-    root_main.iconbitmap("toolbox.ico")
+    root_main.iconbitmap(f"{os.path.dirname(__file__)}/static/toolbox.ico")
     root_main.resizable(False, False)
 
     # 新建画布

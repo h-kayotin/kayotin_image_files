@@ -67,19 +67,19 @@ def init_interface(src_root=None, src_canvas: Canvas = None):
 
     # 选择文件路径的按钮
     browse_button = ttk.Button(root, text="选择图片路径",
-                               command=get_dir, width=width, style="success outline button")
+                               command=get_dir, width=width, style="success outline")
     browse_button.bind("")
     canvas_png.create_window(250, 150, window=browse_button)
 
     # 开始转换的按钮
     browse_button = ttk.Button(root, text="开始转换",
-                               command=to_png, width=width, style="success outline button")
+                               command=to_png, width=width, style="success-outline")
     canvas_png.create_window(250, 200, window=browse_button)
 
     # 返回首页的按钮
     browse_button = ttk.Button(root, text="返回首页",
                                command=lambda: back_main(root, canvas_png),
-                               width=width, style="success solid toolbutton")
+                               width=width, style="success-solid-toolbutton")
     canvas_png.create_window(250, 250, window=browse_button)
 
     root.mainloop()

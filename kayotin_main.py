@@ -14,7 +14,7 @@ def main(root=None):
     if root:
         root_main = root
     else:
-        root_main = ttk.Window(themename="lumen")
+        root_main = ttk.Window(themename="journal")
 
     width = 15
     root_main.title("工具箱")
@@ -41,7 +41,10 @@ def main(root=None):
     canvas_main.create_window(250, 200, window=func2_button)
 
     # 第三个功能：查找文件
-    func3_button = ttk.Button(root_main, text="查找文件", command=image_tools.find_file.find_file,
+    # func3_button = ttk.Button(root_main, text="查找文件", command=image_tools.find_file.find_file,
+    #                           width=width, style="success solid toolbutton")
+    func3_button = ttk.Button(root_main, text="查找文件",
+                              command=lambda: image_tools.find_new.FileSearchEngine(root_main, canvas_main),
                               width=width, style="success solid toolbutton")
     canvas_main.create_window(250, 250, window=func3_button)
 

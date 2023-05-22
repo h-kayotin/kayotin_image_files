@@ -9,3 +9,4 @@ from image_tools import jpg_png
 from image_tools import find_file
 from image_tools import classify_file
 from image_tools import repeated_file
+from image_tools import find_new

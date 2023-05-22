@@ -7,18 +7,20 @@ from tkinter.filedialog import askdirectory
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap import utility
-
+import kayotin_main
 
 class FileSearchEngine(ttk.Frame):
 
     queue = Queue()
     searching = False
 
-    def __init__(self, master):
+    def __init__(self, master, canvas=None):
         # super用来调用父类的方法，如果需要新增属性，就要用super来继承原有的属性
         super().__init__(master, padding=15)
         self.result_view = None
         self.pack(fill=BOTH, expand=YES)
+        if canvas:
+            canvas.destroy()
 
         # 这里是绝对路径，/分隔，默认是当前路径
         _path = pathlib.Path().absolute().as_posix()
@@ -99,6 +101,15 @@ class FileSearchEngine(ttk.Frame):
             value="endswith"
         )
         endswith_opt.pack(side=LEFT, padx=15)
+
+        back_button = ttk.Button(
+            master=type_row,
+            text="返回首页",
+            command=self.back_2_main,
+            style="success solid toolbutton",
+            width=8
+        )
+        back_button.pack(side=RIGHT, padx=6)
 
     def create_results_view(self):
         """初始化搜索结果界面"""
@@ -183,6 +194,11 @@ class FileSearchEngine(ttk.Frame):
         # 100ms后执行检查队列
         self.after(100, lambda: self.check_queue(iid))
 
+    def back_2_main(self):
+        for child in self.master.winfo_children():
+            child.destroy()
+        kayotin_main.main(self.master)
+
     def check_queue(self, iid):
         """检查队列，然后进行显示"""
         if all([
@@ -211,7 +227,7 @@ class FileSearchEngine(ttk.Frame):
             self.progressbar.stop()
 
     def insert_row(self, file, iid):
-        """Insert new row in tree search results"""
+        """在搜索结果中插入一行"""
         try:
             _stats = file.stat()
             _name = file.stem
@@ -220,7 +236,7 @@ class FileSearchEngine(ttk.Frame):
             _type = file.suffix.lower()
             if file.is_dir():
                 _type = "dir"
-                _name = file
+                _name = "文件夹"
             _size = FileSearchEngine.convert_size(_stats.st_size)
             _path = file.as_posix()
             iid = self.result_view.insert(
@@ -245,32 +261,10 @@ class FileSearchEngine(ttk.Frame):
     @staticmethod
     def find_contains(term, search_path):
         """关键字搜索"""
-        # for path, _, files in pathlib.os.walk(search_path):
-        #     if files:
-        #         for file in files:
-        #             if term in file:
-        #                 record = pathlib.Path(path) / file
-        #                 FileSearchEngine.queue.put(record)
-        # FileSearchEngine.set_searching(False)
         src_path = pathlib.Path(search_path)
         result = list(src_path.rglob(f"*{term}*"))
         for file in result:
             FileSearchEngine.queue.put(file)
-        # result_folder = []
-        # result_file = []
-        # for file in result:
-        #     if file.is_dir():
-        #         result_folder.append(file)
-        #     else:
-        #         result_file.append(file)
-        # if result_folder:
-        #     for fd in result_folder:
-        #         pass
-        #         # FileSearchEngine.queue.put(fd)
-        #         # 文件夹晚点处理
-        # if result_file:
-        #     for file_name in result_file:
-        #         FileSearchEngine.queue.put(file_name)
         FileSearchEngine.set_searching(False)
 
     @staticmethod
@@ -302,6 +296,6 @@ class FileSearchEngine(ttk.Frame):
 
 if __name__ == '__main__':
 
-    app = ttk.Window("File Search Engine", "journal")
+    app = ttk.Window("文件搜索工具", "journal")
     FileSearchEngine(app)
     app.mainloop()

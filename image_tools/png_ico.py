@@ -65,7 +65,7 @@ def ico_main(src_root=None, src_canvas: Canvas = None):
     if src_root:
         root = src_root
     else:
-        root = ttk.Window()
+        root = ttk.Window(themename="journal")
 
     if src_canvas:
         src_canvas.destroy()

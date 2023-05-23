@@ -10,3 +10,4 @@ from image_tools import find_file
 from image_tools import classify_file
 from image_tools import repeated_file
 from image_tools import find_new
+from image_tools import file_sort

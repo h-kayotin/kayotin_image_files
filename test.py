@@ -1,13 +1,11 @@
 import datetime
 import pathlib
-import os
 from queue import Queue
 from threading import Thread
 from tkinter.filedialog import askdirectory
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap import utility
-import kayotin_main
 
 
 class FileSearchEngine(ttk.Frame):
@@ -15,23 +13,18 @@ class FileSearchEngine(ttk.Frame):
     queue = Queue()
     searching = False
 
-    def __init__(self, master: ttk.Window, canvas=None):
-        # super用来调用父类的方法，如果需要新增属性，就要用super来继承原有的属性
+    def __init__(self, master):
         super().__init__(master, padding=15)
-        self.result_view = None
         self.pack(fill=BOTH, expand=YES)
-        if canvas:
-            canvas.destroy()
-        master.title("文件查找工具")
 
-        # 这里是绝对路径，/分隔，默认是当前路径
+        # application variables
         _path = pathlib.Path().absolute().as_posix()
         self.path_var = ttk.StringVar(value=_path)
-        self.term_var = ttk.StringVar(value='')
-        self.type_var = ttk.StringVar(value='contains')
+        self.term_var = ttk.StringVar(value='md')
+        self.type_var = ttk.StringVar(value='endswidth')
 
         # header and labelframe option container
-        option_text = "请选择或输入文件夹路径，输入关键词开始搜索"
+        option_text = "Complete the form to begin your search"
         self.option_lf = ttk.Labelframe(self, text=option_text, padding=15)
         self.option_lf.pack(fill=X, expand=YES, anchor=N)
 
@@ -43,135 +36,129 @@ class FileSearchEngine(ttk.Frame):
         self.progressbar = ttk.Progressbar(
             master=self, 
             mode=INDETERMINATE, 
-            style="striped-success"
+            bootstyle=(STRIPED, SUCCESS)
         )
         self.progressbar.pack(fill=X, expand=YES)
 
     def create_path_row(self):
-        """在labelframe中加入文件路径选择那一行"""
+        """Add path row to labelframe"""
         path_row = ttk.Frame(self.option_lf)
         path_row.pack(fill=X, expand=YES)
-        path_lbl = ttk.Label(path_row, text="文件夹路径", width=10)
+        path_lbl = ttk.Label(path_row, text="Path", width=8)
         path_lbl.pack(side=LEFT, padx=(15, 0))
         path_ent = ttk.Entry(path_row, textvariable=self.path_var)
         path_ent.pack(side=LEFT, fill=X, expand=YES, padx=5)
         browse_btn = ttk.Button(
             master=path_row, 
-            text="浏览",
+            text="Browse", 
             command=self.on_browse, 
             width=8
         )
         browse_btn.pack(side=LEFT, padx=5)
 
     def create_term_row(self):
-        """在labelframe中加入关键字行"""
+        """Add term row to labelframe"""
         term_row = ttk.Frame(self.option_lf)
         term_row.pack(fill=X, expand=YES, pady=15)
-        term_lbl = ttk.Label(term_row, text="关键字", width=10)
+        term_lbl = ttk.Label(term_row, text="Term", width=8)
         term_lbl.pack(side=LEFT, padx=(15, 0))
         term_ent = ttk.Entry(term_row, textvariable=self.term_var)
         term_ent.pack(side=LEFT, fill=X, expand=YES, padx=5)
         search_btn = ttk.Button(
             master=term_row, 
-            text="开始搜索",
+            text="Search", 
             command=self.on_search, 
-            style=OUTLINE,
+            bootstyle=OUTLINE, 
             width=8
         )
         search_btn.pack(side=LEFT, padx=5)
 
     def create_type_row(self):
-        """在labelframe创建类型选择行"""
+        """Add type row to labelframe"""
         type_row = ttk.Frame(self.option_lf)
         type_row.pack(fill=X, expand=YES)
-        type_lbl = ttk.Label(type_row, text="搜索类型", width=10)
+        type_lbl = ttk.Label(type_row, text="Type", width=8)
         type_lbl.pack(side=LEFT, padx=(15, 0))
 
         contains_opt = ttk.Radiobutton(
             master=type_row, 
-            text="包含",
+            text="Contains", 
             variable=self.type_var, 
             value="contains"
         )
         contains_opt.pack(side=LEFT)
-        contains_opt.invoke()
+
+        startswith_opt = ttk.Radiobutton(
+            master=type_row, 
+            text="StartsWith", 
+            variable=self.type_var, 
+            value="startswith"
+        )
+        startswith_opt.pack(side=LEFT, padx=15)
 
         endswith_opt = ttk.Radiobutton(
             master=type_row, 
-            text="后缀名",
+            text="EndsWith", 
             variable=self.type_var, 
             value="endswith"
         )
-        endswith_opt.pack(side=LEFT, padx=15)
-
-        back_button = ttk.Button(
-            master=type_row,
-            text="返回首页",
-            command=self.back_2_main,
-            style="success solid toolbutton",
-            width=8
-        )
-        back_button.pack(side=RIGHT, padx=6)
+        endswith_opt.pack(side=LEFT)
+        endswith_opt.invoke()
 
     def create_results_view(self):
-        """初始化搜索结果界面"""
-        self.result_view = ttk.Treeview(
-            master=self,
-            style="info",
-            columns=["0", 1, 2, 3, 4],
+        """Add result treeview to labelframe"""
+        self.resultview = ttk.Treeview(
+            master=self, 
+            bootstyle=INFO, 
+            columns=[0, 1, 2, 3, 4],
             show=HEADINGS
         )
-        self.result_view.pack(fill=BOTH, expand=YES, pady=10)
+        self.resultview.pack(fill=BOTH, expand=YES, pady=10)
 
         # setup columns and use `scale_size` to adjust for resolution
-        self.result_view.heading(0, text='文件名', anchor=W)
-        self.result_view.heading(1, text='最后修改时间', anchor=W)
-        self.result_view.heading(2, text='文件类型', anchor=E)
-        self.result_view.heading(3, text='大小', anchor=E)
-        self.result_view.heading(4, text='路径', anchor=W)
-        self.result_view.column(
+        self.resultview.heading(0, text='Name', anchor=W)
+        self.resultview.heading(1, text='Modified', anchor=W)
+        self.resultview.heading(2, text='Type', anchor=E)
+        self.resultview.heading(3, text='Size', anchor=E)
+        self.resultview.heading(4, text='Path', anchor=W)
+        self.resultview.column(
             column=0, 
             anchor=W, 
             width=utility.scale_size(self, 125), 
             stretch=False
         )
-        self.result_view.column(
+        self.resultview.column(
             column=1, 
             anchor=W, 
             width=utility.scale_size(self, 140), 
             stretch=False
         )
-        self.result_view.column(
+        self.resultview.column(
             column=2, 
             anchor=E, 
-            width=utility.scale_size(self, 70),
+            width=utility.scale_size(self, 50), 
             stretch=False
         )
-        self.result_view.column(
+        self.resultview.column(
             column=3, 
             anchor=E, 
             width=utility.scale_size(self, 50), 
             stretch=False
         )
-        self.result_view.column(
+        self.resultview.column(
             column=4, 
             anchor=W, 
             width=utility.scale_size(self, 300)
         )
 
     def on_browse(self):
-        """选择文件路径"""
-        path = askdirectory(title="选择文件路径")
+        """Callback for directory browse"""
+        path = askdirectory(title="Browse directory")
         if path:
             self.path_var.set(path)
 
     def on_search(self):
-        """根据文件类型进行搜索"""
-        # 下次搜索前，先清除之前的结果
-        items = self.result_view.get_children()
-        for item in items:
-            self.result_view.delete(item)
-
+        """Search for a term based on the search type"""
         search_term = self.term_var.get()
         search_path = self.path_var.get()
         search_type = self.type_var.get()
@@ -180,7 +167,6 @@ class FileSearchEngine(ttk.Frame):
             return
 
         # start search in another thread to prevent UI from locking
-        # 新建一个进程来进行搜索
         Thread(
             target=FileSearchEngine.file_search, 
             args=(search_term, search_path, search_type), 
@@ -188,21 +174,15 @@ class FileSearchEngine(ttk.Frame):
         ).start()
         self.progressbar.start(10)
 
-        iid = self.result_view.insert(
+        iid = self.resultview.insert(
             parent='', 
             index=END, 
         )
-        self.result_view.item(iid, open=True)
-        # 100ms后执行检查队列
+        self.resultview.item(iid, open=True)
         self.after(100, lambda: self.check_queue(iid))
 
-    def back_2_main(self):
-        for child in self.master.winfo_children():
-            child.destroy()
-        kayotin_main.main(self.master)
-
     def check_queue(self, iid):
-        """检查队列，然后进行显示"""
+        """Check file queue and print results if not empty"""
         if all([
             FileSearchEngine.searching, 
             not FileSearchEngine.queue.empty()
@@ -229,50 +209,62 @@ class FileSearchEngine(ttk.Frame):
             self.progressbar.stop()
 
     def insert_row(self, file, iid):
-        """在搜索结果中插入一行"""
+        """Insert new row in tree search results"""
         try:
             _stats = file.stat()
             _name = file.stem
             _timestamp = datetime.datetime.fromtimestamp(_stats.st_mtime)
-            _modified = _timestamp.strftime(r'%Y/%m/%d %H:%M')
+            _modified = _timestamp.strftime(r'%m/%d/%Y %I:%M:%S%p')
             _type = file.suffix.lower()
-            if file.is_dir():
-                _type = "dir"
-                _name = "文件夹"
             _size = FileSearchEngine.convert_size(_stats.st_size)
             _path = file.as_posix()
-            iid = self.result_view.insert(
+            iid = self.resultview.insert(
                 parent='', 
                 index=END, 
                 values=(_name, _modified, _type, _size, _path)
             )
-            self.result_view.selection_set(iid)
-            self.result_view.see(iid)
+            self.resultview.selection_set(iid)
+            self.resultview.see(iid)
         except OSError:
             return
 
-    @staticmethod  # 静态方法表示不和类相关的方法
+    @staticmethod
     def file_search(term, search_path, search_type):
-        """根据搜索类型分别调用方法进行搜索"""
-        FileSearchEngine.set_searching(True)
+        """Recursively search directory for matching files"""
+        FileSearchEngine.set_searching(1)
         if search_type == 'contains':
             FileSearchEngine.find_contains(term, search_path)
+        elif search_type == 'startswith':
+            FileSearchEngine.find_startswith(term, search_path)
         elif search_type == 'endswith':
             FileSearchEngine.find_endswith(term, search_path)
 
     @staticmethod
     def find_contains(term, search_path):
-        """关键字搜索"""
-        src_path = pathlib.Path(search_path)
-        result = list(src_path.rglob(f"*{term}*"))
-        for file in result:
-            FileSearchEngine.queue.put(file)
+        """Find all files that contain the search term"""
+        for path, _, files in pathlib.os.walk(search_path):
+            if files:
+                for file in files:
+                    if term in file:
+                        record = pathlib.Path(path) / file
+                        FileSearchEngine.queue.put(record)
+        FileSearchEngine.set_searching(False)
+
+    @staticmethod
+    def find_startswith(term, search_path):
+        """Find all files that start with the search term"""
+        for path, _, files in pathlib.os.walk(search_path):
+            if files:
+                for file in files:
+                    if file.startswith(term):
+                        record = pathlib.Path(path) / file
+                        FileSearchEngine.queue.put(record)
         FileSearchEngine.set_searching(False)
 
     @staticmethod
     def find_endswith(term, search_path):
-        """根据后缀名搜索"""
-        for path, _, files in os.walk(search_path):
+        """Find all files that end with the search term"""
+        for path, _, files in pathlib.os.walk(search_path):
             if files:
                 for file in files:
                     if file.endswith(term):
@@ -282,7 +274,7 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def set_searching(state=False):
-        """设定搜索的状态"""
+        """Set searching status"""
         FileSearchEngine.searching = state
 
     @staticmethod
@@ -298,6 +290,6 @@ class FileSearchEngine(ttk.Frame):
 
 if __name__ == '__main__':
 
-    app = ttk.Window("文件搜索工具", "journal")
+    app = ttk.Window("File Search Engine", "journal")
     FileSearchEngine(app)
     app.mainloop()

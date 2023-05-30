@@ -7,7 +7,13 @@ pathlib，pillow，ttkbootstrap
 
 ### How to use
 
-运行kayotin_main.py即可
+运行kayotin_main.py即可，主界面如下：
+
+![](./static/main_page.png)
+
+子界面如下：
+![](./static/sub_page.png)
+
 
 ### 包含以下功能
 
@@ -19,6 +25,6 @@ pathlib，pillow，ttkbootstrap
 
 ### 更新
 
-1. 目前准备全换成界面化操作，施工中
+1. 目前已经全部更新成了图形界面，使用ttk，更加便于操作
 
 

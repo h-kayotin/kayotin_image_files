@@ -49,7 +49,8 @@ def main(root=None):
     canvas_main.create_window(250, 250, window=func3_button)
 
     # 第四个功能：分类文件
-    func4_button = ttk.Button(root_main, text="文件分类", command=image_tools.classify_file.classify_file,
+    func4_button = ttk.Button(root_main, text="文件分类",
+                              command=lambda: image_tools.file_sort.FileSortTool(root_main, canvas_main),
                               width=width, style="info outline")
     canvas_main.create_window(250, 300, window=func4_button)
 

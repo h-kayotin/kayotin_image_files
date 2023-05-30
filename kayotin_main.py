@@ -31,7 +31,7 @@ def main(root=None):
     # 第一个功能：转换成ICO
     func1_button = ttk.Button(root_main, text="PNG转ICO",
                               command=lambda: image_tools.png_ico.ico_main(root_main, canvas_main),
-                              width=width, style="success outline")
+                              width=width, style="danger outline")
     canvas_main.create_window(250, 150, window=func1_button)
 
     # 第二个功能：jpg转png
@@ -43,7 +43,7 @@ def main(root=None):
     # 第三个功能：查找文件
     func3_button = ttk.Button(root_main, text="查找文件",
                               command=lambda: image_tools.find_new.FileSearchEngine(root_main, canvas_main),
-                              width=width, style="success solid toolbutton")
+                              width=width, style="danger outline")
     canvas_main.create_window(250, 250, window=func3_button)
 
     # 第四个功能：分类文件
@@ -53,10 +53,10 @@ def main(root=None):
     canvas_main.create_window(250, 300, window=func4_button)
 
     # 第五个功能：查找重复文件
-    func4_button = ttk.Button(root_main, text="查找重复文件",
+    func5_button = ttk.Button(root_main, text="查找重复文件",
                               command=lambda: image_tools.clean_up.FileCleanTool(root_main, canvas_main),
-                              width=width, style="success outline")
-    canvas_main.create_window(250, 350, window=func4_button)
+                              width=width, style="danger outline")
+    canvas_main.create_window(250, 350, window=func5_button)
 
     root_main.mainloop()
 

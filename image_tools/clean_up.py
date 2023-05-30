@@ -28,7 +28,7 @@ class FileCleanTool(ttk.Frame):
         self.option_lf = ttk.Labelframe(self, text=option_text, padding=15)
         self.option_lf.pack(fill=X, expand=YES, anchor=N)
 
-        output_text = "整理结果如下所示"
+        output_text = "运行结果如下所示"
         self.output = ttk.Labelframe(self, text=output_text, padding=15)
         self.output.pack(fill=X, expand=YES, anchor=N, pady=10)
 

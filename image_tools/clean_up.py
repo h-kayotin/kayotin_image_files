@@ -1,5 +1,5 @@
 """
-file_sort - 界面化文件分类
+clean_up - 查找重复文件的界面化
 
 Author: JiangHai江海
 Date： 2023/5/23
@@ -9,24 +9,22 @@ from ttkbootstrap.constants import *
 import pathlib
 from tkinter.filedialog import askdirectory
 import kayotin_main
-import glob
-import os
-import shutil
+from filecmp import cmp
 
 
-class FileSortTool(ttk.Frame):
+class FileCleanTool(ttk.Frame):
 
     def __init__(self, master: ttk.Window, canvas=None):
         super().__init__(master, padding=15)
         self.pack(fill=BOTH, expand=YES)
         if canvas:
             canvas.destroy()
-        master.title("文件整理工具")
+        master.title("文件清理工具")
 
         _path = pathlib.Path().absolute().as_posix()
         self.path_var = ttk.StringVar(value=_path)
 
-        option_text = "请选择或输入文件夹路径，然后点击按钮开始整理"
+        option_text = "请选择或输入文件夹路径，然后点击按钮开始整理重复文件"
         self.option_lf = ttk.Labelframe(self, text=option_text, padding=15)
         self.option_lf.pack(fill=X, expand=YES, anchor=N)
 
@@ -110,30 +108,29 @@ class FileSortTool(ttk.Frame):
         str_path = self.path_var.get()
         src_path = pathlib.Path(str_path)
         # 整理后放在new_path下，如果没有该文件夹就新建一个
-        new_path = pathlib.Path(f"{src_path}/分类文件夹")
+        new_path = pathlib.Path(f"{src_path}/重复文件")
         if not new_path.exists():
             pathlib.Path.mkdir(new_path)
         file_num = 0
-        dir_num = 0
-        for file in glob.glob(f"{src_path}/**/*", recursive=True):
-            if os.path.isfile(file):
-                filename = os.path.basename(file)
-                if "." in filename:
-                    suffix = filename.split(".")[-1]
-                else:
-                    suffix = "others"
 
-                if not os.path.exists(f"{new_path}/{suffix}"):
-                    os.mkdir(f"{new_path}/{suffix}")
-                    dir_num += 1
+        file_list = []
+        result = list(src_path.rglob("*"))
+        for file in result:
+            if file.is_file():
+                file_list.append(file)
 
-                shutil.copy(file, f"{new_path}/{suffix}")
-                file_num += 1
-        self.output_text.set(f"整理完毕，一共整理了{file_num}个文件,"
-                             f"共有{dir_num}种类型的文件，\n整理结果放在所选路径的【分类文件夹】下。")
+        for file in file_list:
+            for file_c in file_list:
+                if file != file_c and file.exists() and file_c.exists():
+                    if cmp(file, file_c):
+                        file_c.replace(new_path / file_c.name)
+                        file_num += 1
+
+        self.output_text.set(f"整理完毕，一共发现了{file_num}个重复文件,"
+                             f"\n放在所选路径的【重复文件】下，请确认后进行删除。")
 
 
 if __name__ == '__main__':
     root = ttk.Window("文件分类工具", "journal")
-    FileSortTool(root)
+    FileCleanTool(root)
     root.mainloop()

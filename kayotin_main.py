@@ -41,8 +41,6 @@ def main(root=None):
     canvas_main.create_window(250, 200, window=func2_button)
 
     # 第三个功能：查找文件
-    # func3_button = ttk.Button(root_main, text="查找文件", command=image_tools.find_file.find_file,
-    #                           width=width, style="success solid toolbutton")
     func3_button = ttk.Button(root_main, text="查找文件",
                               command=lambda: image_tools.find_new.FileSearchEngine(root_main, canvas_main),
                               width=width, style="success solid toolbutton")
@@ -55,7 +53,8 @@ def main(root=None):
     canvas_main.create_window(250, 300, window=func4_button)
 
     # 第五个功能：查找重复文件
-    func4_button = ttk.Button(root_main, text="查找重复文件", command=image_tools.repeated_file.rp_file,
+    func4_button = ttk.Button(root_main, text="查找重复文件",
+                              command=lambda: image_tools.clean_up.FileCleanTool(root_main, canvas_main),
                               width=width, style="success outline")
     canvas_main.create_window(250, 350, window=func4_button)
 

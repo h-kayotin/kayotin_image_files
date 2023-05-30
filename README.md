@@ -9,20 +9,11 @@ pathlib，pillow，ttkbootstrap
 
 运行kayotin_main.py即可，主界面如下：
 
-<kbd><img src="./static/main_page.png" height="300px"/></kbd>
+<kbd><img src="./static/main_page.png" height="400px"/></kbd>
 
-![main_page](./static/main_page.png)
-
-<style>
-img[alt="main_page"]{
-  width:100px;
-}
-</style>
 子界面如下：
 
-
-
-![](./static/sub_page.png)
+<kbd><img src="./static/sub_page.png" height="400px"/></kbd>
 
 
 ### 包含以下功能

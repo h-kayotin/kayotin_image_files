@@ -207,26 +207,28 @@ class FileSearchEngine(ttk.Frame):
     def check_queue(self, iid):  # 这个方法还要研究下
         """检查队列，然后进行显示"""
         if all([
-            FileSearchEngine.searching, 
-            not FileSearchEngine.queue.empty()
+            FileSearchEngine.searching,  # 在搜索中
+            not FileSearchEngine.queue.empty()  # 并且队列不为空
         ]):
             filename = FileSearchEngine.queue.get()
             self.insert_row(filename, iid)
             self.update_idletasks()
             self.after(100, lambda: self.check_queue(iid))
         elif all([
-            not FileSearchEngine.searching,
-            not FileSearchEngine.queue.empty()
+            not FileSearchEngine.searching,  # 搜索已结束
+            not FileSearchEngine.queue.empty()  # 但队列不为空
         ]):
+            # 当队列不为空，就反复的插入新的行
             while not FileSearchEngine.queue.empty():
                 filename = FileSearchEngine.queue.get()
                 self.insert_row(filename, iid)
-            self.update_idletasks()
+            self.update_idletasks()  # 该方法是为了避免tk在处理一个长时间任务时可能出现的卡顿
             self.progressbar.stop()
         elif all([
-            FileSearchEngine.searching,
+            FileSearchEngine.searching,  # 在搜索中，且队列为空
             FileSearchEngine.queue.empty()
         ]):
+            # 这种情况下，稍等0.1s再来检查队列
             self.after(100, lambda: self.check_queue(iid))
         else:
             self.progressbar.stop()
@@ -234,11 +236,12 @@ class FileSearchEngine(ttk.Frame):
     def insert_row(self, file, iid):
         """在搜索结果中插入一行"""
         try:
-            _stats = file.stat()
-            _name = file.stem
+            _stats = file.stat()  # 文件状态信息
+            _name = file.stem   #
+            # st_mtime实际上是最后访问时间
             _timestamp = datetime.datetime.fromtimestamp(_stats.st_mtime)
             _modified = _timestamp.strftime(r'%Y/%m/%d %H:%M')
-            _type = file.suffix.lower()
+            _type = file.suffix.lower()  # 文件类型
             if file.is_dir():
                 _type = "dir"
                 _name = "文件夹"
@@ -249,8 +252,8 @@ class FileSearchEngine(ttk.Frame):
                 index=END, 
                 values=(_name, _modified, _type, _size, _path)
             )
-            self.result_view.selection_set(iid)
-            self.result_view.see(iid)
+            self.result_view.selection_set(iid)  # 选择这一行，这样每次都选择最后一行
+            self.result_view.see(iid)  # see方法用来滚动使所选的行可见
         except OSError:
             return
 

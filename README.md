@@ -7,7 +7,9 @@ pathlib，pillow，ttkbootstrap
 
 ### How to use
 
-运行kayotin_main.py即可，主界面如下：
+运行kayotin_main.py即可，
+也可以直接下载release版本运行。
+主界面如下：
 
 <div align=center><kbd><img src="./static/main_page.png" height="400px"/></kbd></div>
 

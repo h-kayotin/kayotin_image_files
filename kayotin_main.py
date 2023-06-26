@@ -8,6 +8,8 @@ Date： 2023/5/11
 import image_tools
 import ttkbootstrap as ttk
 import os
+import base64
+from image_tools.icon import img
 
 
 def main(root=None):
@@ -18,7 +20,14 @@ def main(root=None):
 
     width = 15
     root_main.title("工具箱")
-    root_main.iconbitmap(f"{os.path.dirname(__file__)}/static/toolbox.ico")
+
+    # 创建临时图标文件
+    tmp = open("tmp.ico", "wb+")
+    tmp.write(base64.b64decode(img))
+    tmp.close()
+    root_main.iconbitmap("tmp.ico")
+    os.remove("tmp.ico")
+
     root_main.resizable(False, False)
 
     # 新建画布

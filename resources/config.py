@@ -19,6 +19,6 @@ o365_user = "111"
 o365_pwd = "111"
 sp_url = "111"
 
-access_key_id = "LTAI5tFbrnCXZ4QmbUVefLEi"
-access_key_secret = "8Q9ZxBmut2y6QUsCAo7ZceXpIcG08Q"
+access_key_id = "11"
+access_key_secret = "1111"
 

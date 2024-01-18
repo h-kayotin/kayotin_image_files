@@ -30,8 +30,8 @@ def sel_main():
     username_input = browser.find_element(By.ID, 'loginname')
     pw_input = browser.find_element(By.ID, 'nloginpwd')
     # 模拟输入
-    username_input.send_keys('18237763193')
-    pw_input.send_keys('rgf-HR2011')
+    username_input.send_keys('18xxxxxxx93')
+    pw_input.send_keys('1234567')
     # 选取登录按钮
     submit_btn = browser.find_element(By.ID, 'loginsubmit')
     # su_button = browser.find_element(By.CSS_SELECTOR, '#su')

@@ -1,5 +1,7 @@
-# kayotin_image_files
-图片转换格式，转ICO，转jpg。以及一些文件分类操作。
+# kayotin的工具箱
+
+## kayotin_image_files
+图片转换格式，转ICO，转jpg。以及一些文件分类操作。另外把自己的一些常用代码也放在这个库了。
 
 ### 需要的库：
 
@@ -29,5 +31,17 @@ pathlib，pillow，ttkbootstrap
 ### 更新
 
 1. 目前已经全部使用ttk更新成了图形界面，便于操作
+
+
+## NLP
+使用阿里云的NLP进行分词，和进行一些简单的购物车关联词语分析。
+
+## 滑块验证码
+使用滑块验证码，跳过JD的登录验证。
+
+## 问卷星填写
+https://github.com/zzmvp-1/wjx-auto-fill
+
+批量录入答案，用以得到想要的结果。
 
 

@@ -7,81 +7,136 @@ Author: hanayo
 Date： 2024/2/28
 """
 
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
 import time
-import selenium
-from selenium.common.exceptions import NoSuchElementException
+import requests
+import utils
+import config
+import sys
 
-# 题目总数
-question_num = 15
+# 问卷链接
+url = config.url
 
-# 题目种类，1表示单选，2表示多选
-ques_types = [1] * question_num
-ques_types[2] = 0
+# 每题选项的比例
+prob = config.prob
 
-# 题目选项, 也就是所有的都选A，第三题选AB
-choices: list[int | list[int]] = [0] * question_num
-choices[2] = [0, 1]
+# 填空题答案
+answerList = config.answerList
 
-print(choices)
+# 填写份数
+epochs = config.epochs
 
+# IP API代提取链接
+api = config.api
 
-def write_wjx(url):
-    driver = webdriver.Chrome()
+# UA库
+UA = config.UA
 
-    # 设置浏览器定位
-    (longitude, latitude) = fun.random_position()
-    # print(longitude, latitude)
-    driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
-        "latitude": latitude,
-        "longitude": longitude,
-        "accuracy": 100
-    })
-    # 将webdriver属性置为undefined
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument',
-                        {'source': 'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
-    })
+option = webdriver.EdgeOptions()
+option.add_experimental_option('excludeSwitches', ['enable-automation'])
+option.add_experimental_option('useAutomationExtension', False)
 
-    # 打开问卷星网址
-    driver.get(url)
-    for i in range(0, question_num):
-        # 题目的题目类型
-        ques_type = ques_types[i]
-        if ques_type == 1:  # 单选
-            q_option = choices[i]
-            q_select = driver.find_element(By.XPATH, f'//*[@id="div{i + 1}"]/div[2]/div[{q_option}]')
-            q_select.click()
-        elif ques_type == 0:  # 多选
-            q_selects = choices[i]
-            for j in q_selects:
-                q_select = driver.find_element(By.XPATH, f'//*[@id="div{i+1}"]/div[2]/div[{j}]')
-                q_select.click()
-    submit_button = driver.find_element(By.XPATH, '//*[@id="ctlNext"]')
-    submit_button.click()
-    time.sleep(0.2)
+if __name__ == "__main__":
 
-    # 点按验证（新）
-    confirm = driver.find_element(By.XPATH, '//*[@id="layui-layer1"]/div[3]/a')
-    confirm.click()
-    validation = driver.find_element(By.XPATH, '//*[@id="SM_BTN_WRAPPER_1"]')
-    validation.click()
-    time.sleep(2.5)
+    for epoch in range(epochs):
 
-    res = driver.find_element(By.XPATH, '//*[@id="SM_TXT_1"]')
+        # 通过API链接爬取IP，这里根据自己的情况进行修改
+        ip = requests.get(api).text
+        # 修改IP
+        option.add_argument('--proxy-server={}'.format(ip))
 
-    # 滑块验证
-    try:
-        slider = driver.find_element(By.XPATH, '//*[@id="nc_1__scale_text"]/span')
+        driver = webdriver.Edge(options=option)
+        # 修改User-Agent
+        num = random.randint(0, 2)
+        driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": UA[num]})
+        # 将webdriver属性置为undefined
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument',
+                               {'source': 'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'})
 
-        print('[' + eval(head) + f']: ', slider.text, cnt)
-        if str(slider.text).startswith("请按住滑块"):
-            width = slider.size.get('width')
-            ActionChains(driver).drag_and_drop_by_offset(slider, width, 0).perform()
+        driver.get(url)
 
-    except NoSuchElementException:
-        pass
+        # 题号
+        index = 1
+        # 获取题目数量
+        questions = driver.find_elements(By.CLASS_NAME, "field.ui-field-contain")
+        for i in range(1, len(questions) + 1):
+            xpath = '//*[@id="div{}"]'.format(i)
+            question = driver.find_element(By.XPATH, xpath)
+            # 获取题目类型
+            flag = question.get_attribute("type")
+            if flag == '2':
+                index = utils.fill_blank(driver, i, answerList, index)
+                time.sleep(1)
+            elif flag == '3':
+                index = utils.single_choice(driver, i, prob, index)
+                time.sleep(0.4)
+            elif flag == '4':
+                index = utils.multi_choice(driver, i, prob, index)
+                time.sleep(1)
+            elif flag == '5':
+                index = utils.single_scale(driver, i, prob, index)
+                time.sleep(1)
+            elif flag == '6':
+                xpath = '//*[@id="div{}"]/div[1]/div[2]/span'.format(i)
+                if driver.find_element(By.XPATH, xpath).text.find("【") != -1:
+                    index = utils.multi_matrix_scale(driver, i, prob, index, num)
+                    time.sleep(1)
+                else:
+                    index = utils.single_matrix_scale(driver, i, prob, index, num)
+                    time.sleep(1)
+            elif flag == '7':
+                index = utils.select(driver, i, prob, index)
+                time.sleep(1)
+            elif flag == '8':
+                index = utils.single_slide(driver, i, prob, index)
+                time.sleep(2)
+            elif flag == '11':
+                index = utils.sort(driver, i, prob, index)
+                time.sleep(1)
+            elif flag == '12':
+                index = utils.multi_slide(driver, i, prob, index)
+                time.sleep(1)
+            else:
+                print("没有该题型")
+                sys.exit(0)
 
-    time.sleep(1)
-    print('[' + eval(head) + f']: ', res.text, cnt)
-    driver.close()
+        time.sleep(0.5)
+        submit_button = driver.find_element(By.XPATH, '//*[@id="ctlNext"]')
+        submit_button.click()
+        time.sleep(0.5)
+
+        # 请点击智能验证码进行验证！
+        try:
+            comfirm = driver.find_element(By.XPATH, '//*[@id="layui-layer1"]/div[3]/a')
+            comfirm.click()
+            time.sleep(1)
+        except Exception as e:
+            print(e)
+
+        # 点击按钮开始智能验证
+        try:
+            button = driver.find_element(By.XPATH, '//*[@id="SM_BTN_WRAPPER_1"]')
+            button.click()
+            time.sleep(0.5)
+        except Exception as e:
+            print(e)
+
+        # 滑块验证
+        try:
+            slider = driver.find_element(By.XPATH, '//*[@id="nc_1__scale_text"]/span')
+            time.sleep(0.3)
+            if str(slider.text).startswith("请按住滑块，拖动到最右边"):
+                width = slider.size.get('width')
+                ActionChains(driver).drag_and_drop_by_offset(slider, width, 0).perform()
+                time.sleep(1)
+        except Exception as e:
+            print(e)
+
+        time.sleep(3)
+        driver.quit()
+        print("已完成{}份".format(epoch+1))
+
+    print("全部完成{}份填写".format(epochs))

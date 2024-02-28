@@ -75,7 +75,7 @@ if __name__ == "__main__":
                 time.sleep(0.4)
             elif flag == '4':
                 index = utils.multi_choice(driver, i, prob, index)
-                time.sleep(1)
+                time.sleep(0.4)
             elif flag == '5':
                 index = utils.single_scale(driver, i, prob, index)
                 time.sleep(1)
